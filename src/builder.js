@@ -1,10 +1,11 @@
 import * as THREE from "three";
+import { easeQuadInOut } from "d3-ease";
 
 let layers = [];
-function buildLayer(scene, n, material) {
+function buildLayer(scene, n, material, depthOverride) {
   let w = 20;
   let h = 14;
-  let d = 1;
+  let d = 0.4;
   let geometry = new THREE.BoxGeometry(w, h, d);
 
   let box = new THREE.Mesh(geometry, material);
@@ -14,7 +15,8 @@ function buildLayer(scene, n, material) {
 }
 
 function build(scene) {
-  let m; // abbr. for material
+  let m, t; // abbr. for material, texture
+  let textureLoader = new THREE.TextureLoader();
 
   // backlight
   m = new THREE.MeshPhongMaterial({
@@ -25,7 +27,8 @@ function build(scene) {
 
   // back polarizer
   m = new THREE.MeshBasicMaterial({
-    color: 0xffeeff,
+    color: 0xffffff,
+    map: textureLoader.load("asset/texture/front_polarizer.jpg"),
   });
   buildLayer(scene, 1, m);
 }
@@ -34,24 +37,28 @@ let separationStage = 1.0;
 let isShowLayers = false;
 let showLayersStart = new Date();
 function smoothTrans(mid, numLayers, val, index, reach) {
-  let linearVal = mid + (val / (index - (numLayers - 1) / 2)) * reach;
+  let linearVal =
+    mid +
+    (easeQuadInOut(val) * (index - (numLayers - 1) / 2) * reach) / numLayers;
+  return linearVal;
 }
 function animateLayers() {
   // sep stage timer
   if (isShowLayers) {
     let now = new Date();
-    separationStage = 1 + (now - showLayersStart) / 5000;
+    separationStage = 1 + (now - showLayersStart) / 2000;
   }
 
   let dec = separationStage % 1;
   if (separationStage < 2) {
     // 1.0 to 1.999
     layers.forEach((layer, index) => {
-      layer.position.z = -25 + dec * 10;
+      layer.position.z = smoothTrans(0, layers.length, dec, index, 20);
     });
   } else if (separationStage >= 2 && separationStage < 3) {
     layers.forEach((layer, index) => {
-      layer.position.x = 0 + index * 10;
+      layer.position.x = smoothTrans(0, layers.length, dec, index, 20);
+      layer.position.y = smoothTrans(0, layers.length, dec, index, -4);
     });
   }
 }

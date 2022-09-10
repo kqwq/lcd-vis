@@ -55,7 +55,7 @@ function init() {
     30000
   );
   camera.setRotationFromEuler(new THREE.Euler(-0.1, -0.5, 0, "YXZ"));
-  camera.position.set(-30, 5, 20);
+  camera.position.set(-25, 5, 40);
 
   //scene.fog = new THREE.Fog(0x222, 0, 70);
 
