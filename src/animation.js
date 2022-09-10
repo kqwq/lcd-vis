@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import { animateLayers, build } from "./builder";
+import { OrbitControls } from "three-orbitcontrols-ts";
 
-let scene, light, raycaster, camera, renderer;
+let scene, light, raycaster, camera, renderer, controls;
 let skyboxGeo, materialCorona;
 
 function createPathStrings(filename) {
@@ -55,7 +56,6 @@ function init() {
     30000
   );
   camera.setRotationFromEuler(new THREE.Euler(-0.1, -0.5, 0, "YXZ"));
-  camera.position.set(-25, 5, 40);
 
   //scene.fog = new THREE.Fog(0x222, 0, 70);
 
@@ -72,8 +72,8 @@ function init() {
   // build rest
   build(scene);
 
-  document.addEventListener("keydown", onKeyDown);
-  document.addEventListener("keyup", onKeyUp);
+  // document.addEventListener("keydown", onKeyDown);
+  // document.addEventListener("keyup", onKeyUp);
 
   raycaster = new THREE.Raycaster(
     new THREE.Vector3(),
@@ -92,6 +92,12 @@ function init() {
   // resize
   window.addEventListener("resize", onWindowResize);
 
+  // Orbit controls
+  controls = new OrbitControls(camera, renderer.domElement);
+  console.log(camera, renderer.domElement, controls);
+  camera.position.set(-25, 5, 40);
+  controls.update();
+
   // animate
   animate();
 }
@@ -106,6 +112,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   animateLayers();
+  controls.update();
   renderer.render(scene, camera);
 }
 
