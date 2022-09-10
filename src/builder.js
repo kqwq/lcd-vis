@@ -23,7 +23,7 @@ function build(scene) {
     color: 0x2121de,
     emissive: 0xeeeeee,
   });
-  buildLayer(scene, 0, m);
+  buildLayer(scene, 0, m, 1.0);
 
   // back polarizer
   m = new THREE.MeshBasicMaterial({
@@ -48,6 +48,15 @@ function build(scene) {
     transparent: true,
   });
   buildLayer(scene, 1, m, 0.1);
+
+  // glass
+  m = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    map: textureLoader.load("asset/texture/glass.jpg"),
+    transparent: true,
+    opacity: 0.5,
+  });
+  buildLayer(scene, 1, m, 0.4);
 
   // front polarizer
   m = new THREE.MeshBasicMaterial({
