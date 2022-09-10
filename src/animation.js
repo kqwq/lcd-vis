@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { animateLayers, build } from "./builder";
 
 let scene, light, raycaster, camera, renderer;
 let skyboxGeo, materialCorona;
@@ -53,6 +54,8 @@ function init() {
     1,
     30000
   );
+  camera.setRotationFromEuler(new THREE.Euler(-0.1, -0.5, 0, "YXZ"));
+  camera.position.set(-30, 5, 20);
 
   //scene.fog = new THREE.Fog(0x222, 0, 70);
 
@@ -65,6 +68,9 @@ function init() {
   skyboxGeo = new THREE.BoxGeometry(10000, 10000, 10000);
   const skybox = new THREE.Mesh(skyboxGeo, materialCorona);
   scene.add(skybox);
+
+  // build rest
+  build(scene);
 
   document.addEventListener("keydown", onKeyDown);
   document.addEventListener("keyup", onKeyUp);
@@ -99,6 +105,7 @@ function onWindowResize() {
 function animate() {
   requestAnimationFrame(animate);
 
+  animateLayers();
   renderer.render(scene, camera);
 }
 

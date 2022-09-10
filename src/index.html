@@ -5,8 +5,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LCD Displays</title>
+    <style>
+      #overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #btn-container {
+        position: absolute;
+        bottom: 5%;
+        right: 5%;
+      }
+      button {
+      }
+    </style>
   </head>
   <body>
-    .
+    <div id="overlay">
+      <div id="btn-container">
+        <button onclick="window.showLayers()">Show layers</button>
+      </div>
+    </div>
   </body>
 </html>
