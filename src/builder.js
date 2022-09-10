@@ -5,7 +5,7 @@ let layers = [];
 function buildLayer(scene, n, material, depthOverride) {
   let w = 20;
   let h = 14;
-  let d = 0.4;
+  let d = depthOverride === undefined ? 0.4 : depthOverride;
   let geometry = new THREE.BoxGeometry(w, h, d);
 
   let box = new THREE.Mesh(geometry, material);
@@ -28,9 +28,34 @@ function build(scene) {
   // back polarizer
   m = new THREE.MeshBasicMaterial({
     color: 0xffffff,
-    map: textureLoader.load("asset/texture/front_polarizer.jpg"),
+    map: textureLoader.load("asset/texture/b_p.png"),
+    transparent: true,
   });
-  buildLayer(scene, 1, m);
+  buildLayer(scene, 1, m, 0);
+
+  //tft
+  m = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    map: textureLoader.load("asset/texture/tft.png"),
+    transparent: true,
+  });
+  buildLayer(scene, 1, m, 0);
+
+  //rgb
+  m = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    map: textureLoader.load("asset/texture/rgb.png"),
+    transparent: true,
+  });
+  buildLayer(scene, 1, m, 0.1);
+
+  // front polarizer
+  m = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    map: textureLoader.load("asset/texture/f_p.png"),
+    transparent: true,
+  });
+  buildLayer(scene, 1, m, 0);
 }
 
 let separationStage = 1.0;
