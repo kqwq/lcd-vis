@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { easeQuadInOut } from "d3-ease";
 
+let hoverer;
 let layers = [];
 let siding = [];
 let w = 20;
@@ -110,6 +111,9 @@ function build(scene) {
   keyboard.position.set(0, -h / 2 - 1, h / 2 + 1);
   scene.add(keyboard);
   siding.push(keyboard);
+
+  // hoverer
+  hoverer = new Hoverer(scene);
 }
 
 let separationStage = 1.0;
@@ -152,7 +156,17 @@ function animateLayers(delta) {
       layer.position.y = smoothTrans(0, layers.length, dec, index, -4);
     });
   }
+
+  // Hoverer logic
+  hoverer.update();
 }
+
+class Hoverer {
+  constructor(scene) {}
+
+  update() {}
+}
+
 window.showLayers = () => {
   gotoSeparationStage = 3;
   showLayersStart = new Date();
