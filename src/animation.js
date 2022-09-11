@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { animateLayers, build } from "./builder";
-import { OrbitControls } from "three-orbitcontrols-ts";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-let scene, light, raycaster, camera, renderer, controls;
+let scene, light, raycaster, camera, renderer, controls, clock;
 let skyboxGeo, materialCorona;
 
 function createPathStrings(filename) {
@@ -59,9 +59,17 @@ function init() {
 
   //scene.fog = new THREE.Fog(0x222, 0, 70);
 
+  // Clock
+  clock = new THREE.Clock();
+
   // Lights
   light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 0.75);
   light.position.set(0.5, 1, 0.75);
+  scene.add(light);
+
+  let newLight = new THREE.PointLight(0xeeeeff, 7.7);
+  newLight.position.set(0, 0, 2);
+  scene.add(newLight);
 
   // skybox init (rest is set up in game.loadStage())
   materialCorona = createMaterialArray("corona");
@@ -96,6 +104,12 @@ function init() {
   controls = new OrbitControls(camera, renderer.domElement);
   console.log(camera, renderer.domElement, controls);
   camera.position.set(-25, 5, 40);
+  controls.enableZoom = true;
+  // controls.mouseButtons = {
+  //   LEFT: THREE.MOUSE.ROTATE,
+  //   MIDDLE: THREE.MOUSE.DOLLY,
+  //   RIGHT: THREE.MOUSE.PAN,
+  // };
   controls.update();
 
   // animate
@@ -111,7 +125,7 @@ function onWindowResize() {
 function animate() {
   requestAnimationFrame(animate);
 
-  animateLayers();
+  animateLayers(clock.getDelta());
   controls.update();
   renderer.render(scene, camera);
 }

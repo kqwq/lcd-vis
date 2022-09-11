@@ -12,11 +12,13 @@
         left: 0;
         width: 100%;
         height: 100%;
+        pointer-events: none;
       }
       #btn-container {
         position: absolute;
         bottom: 5%;
         right: 5%;
+        pointer-events: all;
       }
       button {
       }
@@ -26,6 +28,7 @@
     <div id="overlay">
       <div id="btn-container">
         <button onclick="window.showLayers()">Show layers</button>
+        <button onclick="window.collapseLayers()">Collapse layers</button>
       </div>
     </div>
   </body>

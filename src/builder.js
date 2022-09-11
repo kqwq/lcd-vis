@@ -2,12 +2,12 @@ import * as THREE from "three";
 import { easeQuadInOut } from "d3-ease";
 
 let layers = [];
+let siding = [];
+let w = 20;
+let h = 14;
 function buildLayer(scene, n, material, depthOverride) {
-  let w = 20;
-  let h = 14;
   let d = depthOverride === undefined ? 0.4 : depthOverride;
   let geometry = new THREE.BoxGeometry(w, h, d);
-
   let box = new THREE.Mesh(geometry, material);
   box.position.set(0, 0, -50 + n * 10);
   scene.add(box);
@@ -23,7 +23,7 @@ function build(scene) {
     color: 0x2121de,
     emissive: 0xeeeeee,
   });
-  buildLayer(scene, 0, m, 1.0);
+  buildLayer(scene, 0, m, 0.7);
 
   // back polarizer
   m = new THREE.MeshBasicMaterial({
@@ -65,10 +65,47 @@ function build(scene) {
     transparent: true,
   });
   buildLayer(scene, 1, m, 0);
+
+  // siding
+  m = new THREE.MeshLambertMaterial({
+    color: 0x222222,
+    emissive: 0x001011,
+    transparent: true,
+    opacity: 1,
+  });
+  let sidingD = 0.8;
+  let geos = [
+    // [x, y, z, w, h, d]
+    [0, -(h + 1) / 2, 0, w + 2, 1, sidingD * 2],
+    [0, +(h + 1) / 2, 0, w + 2, 1, sidingD * 2],
+    [-(w + 1) / 2, 0, 0, 1, h + 2, sidingD * 2],
+    [+(w + 1) / 2, 0, 0, 1, h + 2, sidingD * 2],
+  ];
+  for (let [x, y, z, w, h, d] of geos) {
+    let geometry = new THREE.BoxGeometry(w, h, d);
+    let box = new THREE.Mesh(geometry, m);
+    box.position.set(x, y, z);
+    scene.add(box);
+    siding.push(box);
+  }
+
+  // keyboard
+  m = new THREE.MeshLambertMaterial({
+    color: 0x222222,
+    map: textureLoader.load("asset/texture/keyboard.jpg"),
+    emissive: 0x001011,
+    transparent: true,
+    opacity: 1,
+  });
+  let geometry = new THREE.BoxGeometry(w + 2, 0.6, h * 1.2);
+  let keyboard = new THREE.Mesh(geometry, m);
+  keyboard.position.set(0, -h / 2 - 1, h / 2 + 1);
+  scene.add(keyboard);
+  siding.push(keyboard);
 }
 
 let separationStage = 1.0;
-let isShowLayers = false;
+let gotoSeparationStage = 1.0;
 let showLayersStart = new Date();
 function smoothTrans(mid, numLayers, val, index, reach) {
   let linearVal =
@@ -76,11 +113,18 @@ function smoothTrans(mid, numLayers, val, index, reach) {
     (easeQuadInOut(val) * (index - (numLayers - 1) / 2) * reach) / numLayers;
   return linearVal;
 }
-function animateLayers() {
-  // sep stage timer
-  if (isShowLayers) {
-    let now = new Date();
-    separationStage = 1 + (now - showLayersStart) / 2000;
+function animateLayers(delta) {
+  // sep stage logic
+  if (separationStage < gotoSeparationStage) {
+    separationStage += delta;
+    if (separationStage > gotoSeparationStage) {
+      separationStage = gotoSeparationStage;
+    }
+  } else if (separationStage > gotoSeparationStage) {
+    separationStage -= delta;
+    if (separationStage < gotoSeparationStage) {
+      separationStage = gotoSeparationStage;
+    }
   }
 
   let dec = separationStage % 1;
@@ -89,7 +133,12 @@ function animateLayers() {
     layers.forEach((layer, index) => {
       layer.position.z = smoothTrans(0, layers.length, dec, index, 20);
     });
+    // fade out siding
+    siding.forEach((side) => {
+      side.material.opacity = 1 - dec;
+    });
   } else if (separationStage >= 2 && separationStage < 3) {
+    // 2.0 to 2.999
     layers.forEach((layer, index) => {
       layer.position.x = smoothTrans(0, layers.length, dec, index, 20);
       layer.position.y = smoothTrans(0, layers.length, dec, index, -4);
@@ -97,7 +146,11 @@ function animateLayers() {
   }
 }
 window.showLayers = () => {
-  isShowLayers = true;
+  gotoSeparationStage = 3;
+  showLayersStart = new Date();
+};
+window.collapseLayers = () => {
+  gotoSeparationStage = 1;
   showLayersStart = new Date();
 };
 
