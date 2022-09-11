@@ -41,6 +41,14 @@ function build(scene) {
   });
   buildLayer(scene, 1, m, 0);
 
+  //lcd
+  m = new THREE.MeshBasicMaterial({
+    color: 0xddffff,
+    map: textureLoader.load("asset/texture/lcd.jpeg"),
+    transparent: false,
+  });
+  buildLayer(scene, 1, m, 0.3);
+
   //rgb
   m = new THREE.MeshBasicMaterial({
     color: 0xffffff,
@@ -54,7 +62,7 @@ function build(scene) {
     color: 0xffffff,
     map: textureLoader.load("asset/texture/glass.jpg"),
     transparent: true,
-    opacity: 0.5,
+    opacity: 0.9,
   });
   buildLayer(scene, 1, m, 0.4);
 
